@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            padding-top: 80px;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #2d3e50;
+            color: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1001;
+        }
+        header h1 {
+            font-size: 1.8rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background-color: #ffffffd9;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .left-section {
+            flex: 1 1 300px;
+            text-align: center;
+        }
+        .product-image {
+            width: 100%;
+            max-width: 320px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .right-section {
+            flex: 2 1 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .product-box {
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+        }
+
+        .product-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .price {
+            font-size: 1.6rem;
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .section-heading {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 20px;
+            background-color: #2d89ef;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #1b5fbd;
+        }
+
+        /* Popup styles */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(8px);
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+        }
+
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1002;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        input[type="email"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .blur {
+            filter: blur(6px);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-section,
+            .right-section {
+                width: 100%;
+            }
+
+            .product-image {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🛍️ Details Of Your Product</h1>
+    </header>
+
+    <!-- Overlay with black blur -->
+    <div id="overlay"></div>
+
+    <!-- Main content wrapper to apply blur -->
+    <div id="main-content">
+        <div class="container result">
+            <div class="left-section">
+                {% if img_src %}
+                    <img src="{{ img_src }}" alt="Product Image" class="product-image">
+                {% else %}
+                    <p>Image not available</p>
+                {% endif %}
+            </div>
+
+            <div class="right-section">
+                <div class="product-box">
+                    <h1 class="product-title">{{ title }}</h1>
+                    <u>PRICE</u>: <p class="price">{{ price }}</p>
+                </div>
+
+                <div class="product-box">
+                    <h2 class="section-heading">About this item</h2>
+                    <ul>
+                        {% for item in about_list %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <a href="/reviews?name={{ title }}" class="btn" style="text-align: center;">Review Analysis</a>
+                <button class="btn" onclick="openDialog()" style="text-align: center;">Price Drop Notify</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Price Alert Popup -->
+    <div id="popup">
+        <h3>Set Price Alert</h3>
+        <form id="alertForm">
+            <input type="email" id="email" placeholder="Enter your email" required>
+            <input type="number" id="price_limit" placeholder="Enter price limit" required>
+            <button type="submit" class="btn">Submit</button>
+            <button type="button" class="btn" onclick="closeDialog()">Cancel</button>
+        </form>
+    </div>
+
+    <script>
+        function openDialog() {
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('main-content').classList.add('blur');
+        }
+
+        function closeDialog() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('main-content').classList.remove('blur');
+        }
+
+        document.getElementById('alertForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const priceLimit = document.getElementById('price_limit').value;
+            const response = await fetch('/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    price_limit: priceLimit,
+                    product_url: "{{ product_url }}",
+                    product_title: "{{ title }}",
+                    product_price: "{{ price }}",
+                    product_img: "{{ img_src }}"
+                })
+            });
+            const res = await response.text();
+            alert(res);
+            closeDialog();
+        });
+    </script>
+
+</body>
+</html>

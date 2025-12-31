@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amazon Price Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="main">
+        <div class="header"  >
+            SMART SENTIMENT ANALYZER & EMAILER
+            <a href="https://www.amazon.in/" target="_blank" style="margin: 30px; position: relative; top: 7px;"><img src="https://th.bing.com/th/id/R.45b0e69add05f7cdbee40cc9997bd7b4?rik=tXf%2fiMSa7boX3g&riu=http%3a%2f%2flofrev.net%2fwp-content%2fphotos%2f2016%2f06%2famazon-logo-1.png&ehk=ideqrZcqNA%2f4jGcxPjOuRtmkvXlfeBZu%2fgCoZDUbApg%3d&risl=&pid=ImgRaw&r=0" alt="" height="25px" width="25px"></a>
+        </div>
+        <div class="body">
+            <div class="box">
+                <form method="post" class="input">
+                    <input type="url" id="product_url" name="product_url" placeholder="Enter URL" required style="border: 2px solid black; width: 200px; height: 30px; border-radius: 5px;">
+                    <button onclick="result.html" type="submit" style="font-family: Verdana, Geneva, Tahoma, sans-serif; border: 2px solid black; height: 35px; border-radius: 5px;">Track Price</button>
+                </form>
+            </div>
+            <div class="image">
+                <img src="{{ url_for('static', filename='img.png') }}" alt="" height="200px" width="200px">
+            </div>
+            <footer style="font-family: Verdana; text-align: center; padding: 10px; background: #0100005a; color: white; position: fixed; bottom: 0; width: 100%; z-index: 100;">
+                Powered by Amazon | This is an unofficial price tracker
+            </footer>            
+        </div>
+    </div>
+
+  <!-- ✅ Chatbot UI code -->
+  <button class="chatbot-icon" onclick="toggleChat()">💬</button>
+
+  <div class="chatbot-window" id="chatbotWindow">
+    <div class="chatbot-header">Amazon Bot 🤖</div>
+    <div class="chatbot-messages" id="chatMessages"></div>
+    <div class="chatbot-input">
+      <input type="text" id="userInput" placeholder="Ask something..."
+             onkeydown="if(event.key==='Enter') sendMessage()" />
+      <button onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <script>
+    function toggleChat() {
+      const win = document.getElementById('chatbotWindow');
+      win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+      win.style.flexDirection = 'column';
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("userInput");
+      const message = input.value.trim();
+      if (!message) return;
+
+      const chat = document.getElementById("chatMessages");
+      chat.innerHTML += `<div class='user-message'>${message}</div>`;
+      input.value = "";
+
+      fetch("/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      })
+      .then(res => res.json())
+      .then(data => {
+        chat.innerHTML += `<div class='bot-message'>${data.response}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+      });
+    }
+  </script>
+</body>
+</html>

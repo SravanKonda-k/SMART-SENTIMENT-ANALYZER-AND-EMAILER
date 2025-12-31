@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Sentiment Analysis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            padding-top: 80px;
+            color: #2c3e50;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #2d3e50;
+            color: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 999;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .stats-chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            max-width: 1000px;
+            margin: 30px auto;
+            flex-wrap: wrap;
+        }
+
+        .stats-box {
+            margin-top: 60px;
+            flex: 1 1 48%;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box;
+        }
+
+        .chart-box {
+            flex: 1 1 48%;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box;
+        }
+
+        .stats-box ul {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+            font-size: 1.1em;
+        }
+
+        .stats-box li {
+            padding: 10px 0;
+            font-weight: 500;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .stats-box li:last-child {
+            border-bottom: none;
+        }
+
+        .chart-box img {
+            display: block;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .suggestion, .card-container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .suggestion p {
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: #fdfdfd;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card p {
+            margin: 10px 0;
+        }
+
+        .positive {
+            color: #2ecc71;
+        }
+
+        .negative {
+            color: #e74c3c;
+        }
+
+        .neutral {
+            color: #f39c12;
+        }
+
+        .rating-stars {
+            color: #f1c40f;
+            font-size: 18px;
+        }
+
+        .btn-back {
+            display: block;
+            text-align: center;
+            margin: 40px auto 10px;
+            background-color: #2d89ef;
+            color: white;
+            padding: 12px 28px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: background 0.3s ease;
+            width: fit-content;
+        }
+
+        .btn-back:hover {
+            background-color: #1b5fbd;
+        }
+
+        @media (max-width: 768px) {
+            .stats-chart-container {
+                flex-direction: column;
+            }
+
+            .stats-box, .chart-box {
+                flex: 1 1 100%;
+            }
+
+            .stats-box, .suggestion, .card-container {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card p {
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 style="text-align: left;">📊 Review Sentiment Analysis</h1>
+    </header>
+
+    <div class="stats-chart-container">
+        <div class="stats-box">
+            <h2>📈 Statistics</h2>
+            <ul>
+                <li>👍 Positive Reviews: {{ stats['Positive'] }}</li>
+                <li>😐 Neutral Reviews: {{ stats['Neutral'] }}</li>
+                <li>👎 Negative Reviews: {{ stats['Negative'] }}</li>
+                <li>⭐ Average Rating: {{ avg_rating }}</li>
+            </ul>
+        </div>
+        <div class="chart-box">
+            <h2 style="text-align:center;">📊 Sentiment Chart</h2>
+            <img src="data:image/png;base64,{{ pie_url }}" alt="Sentiment Chart" />
+        </div>
+    </div>
+
+    <div class="suggestion">
+        <h2>💡 Suggestions</h2>
+        <p>{{ suggestion }}</p>
+    </div>
+
+    <h2 style="text-align:center;">📝 Top 5 Product Reviews</h2>
+    <div class="card-container">
+        {% for review, sentiment, rating in top_reviews %}
+        <div class="card">
+            <p><strong>Review:</strong> {{ review }}</p>
+            <p class="{{ sentiment|lower }}"><strong>Sentiment:</strong> {{ sentiment }}</p>
+            <p class="rating-stars"><strong>Rating:</strong> {{ '⭐' * rating }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <a href="/" class="btn-back">⬅ Back to Home</a>
+</body>
+</html>
