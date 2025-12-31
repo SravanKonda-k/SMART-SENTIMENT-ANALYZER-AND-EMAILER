@@ -40,7 +40,7 @@ AMAZON_PT/
 How to Run Locally
 
 Clone the project using Git
-git clone (https://github.com/Madhuarruri/Smart-Sentiment-Analyzer-Emailer.git)
+git clone (https://github.com/SravanKonda-k/SMART-SENTIMENT-ANALYZER-AND-EMAILER.git)
 cd smart-sentiment-analyzer-emailer
 
 Install required dependencies
@@ -62,3 +62,4 @@ Contact: madhu@email.com
 Like This Project?
 
 If you found this useful, give it a star on GitHub and share it with others preparing smart sentiment-based applications!
+
