@@ -54,12 +54,13 @@ http://127.0.0.1:5000/
 
 Author
 
-Madhu Arruri
+Sravan Kumar Konda
 JNTUH UCESTH Hyderabad
-Graduation Year: 2026
-Contact: madhu@email.com
+Graduation Year: 2027
+Contact: sravankonda73@gmail.com
 
 Like This Project?
 
 If you found this useful, give it a star on GitHub and share it with others preparing smart sentiment-based applications!
+
 
